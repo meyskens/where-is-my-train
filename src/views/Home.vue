@@ -4,7 +4,7 @@
       <div class="md-title">Trains now running</div>
     </md-card-header>
     <md-card-content>
-      {{backoff}}
+       <md-progress-bar class="md-accent" md-mode="buffer" :md-value="compositionFetched/trips.length*100" :md-buffer="compositionFetched/trips.length*100"></md-progress-bar>
       <ul>
         <li v-for="trip in trips" v-bind:key="trip.id">
           {{trip.trip_short_name}}
@@ -29,6 +29,7 @@ export default {
       gotData: false,
       composition: {}, // key is the train number
       backoff: 0,
+      compositionFetched: 0,
     }
   }, 
   methods: {
@@ -41,6 +42,7 @@ export default {
           this.composition[id] = response.body
           console.log(this.composition)
           this.backoff -= 500
+          this.compositionFetched++
         }, err => {
           console.log(err)
           this.backoff -= 500
@@ -56,7 +58,7 @@ export default {
         if (data.trips.hasOwnProperty(id)) {
           c++
           trips.push(data.trips[id])
-          if (c < 2000) {
+          if (c < 2000) { // limit here when developing!
             this.getComposition(id)
           } 
         }
